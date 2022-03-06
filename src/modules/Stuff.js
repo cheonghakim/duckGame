@@ -1,10 +1,11 @@
 import { commonMat, commonEnv } from "./Common";
-import { Box, Vec3, Body } from "cannon-es";
 import * as CANNON from "cannon-es";
 import { AnimationMixer } from "three";
 
 export class Stuff {
   constructor(data) {
+    this.world = commonEnv.world;
+    this.scene = commonEnv.scene;
     //position
     this.x = data.x || 0;
     this.y = data.y || 0;
@@ -29,11 +30,11 @@ export class Stuff {
   setCannonBoxBody() {
     this.cannonBody = new CANNON.Body({
       shape: new CANNON.Box(
-        new Vec3(this.width / 2, this.height / 2, this.depth / 2)
+        new CANNON.Vec3(this.width / 2, this.height / 2, this.depth / 2)
       ),
       mass: this.mass,
       material: this.canonMaterial,
-      position: new Vec3(this.x, this.y, this.z),
+      position: new CANNON.Vec3(this.x, this.y, this.z),
     });
     this.world.addBody(this.cannonBody);
   }
@@ -44,9 +45,19 @@ export class Floor extends Stuff {
     super(data);
     this.gltfLoader.load(this.imageSrc, (glb) => {
       this.modelMesh = glb.scene.children[0];
+      this.modelMesh.position.set(this.x, this.y, this.z);
+      this.modelMesh.rotation.set(
+        this.rotationX,
+        this.rotationY,
+        this.rotationZ
+      );
+      this.modelMesh.castShadow = true;
+      this.scene.add(this.modelMesh);
 
-      commonEnv.scene.add(this.modelMesh);
-      // this.setCannonBoxBody();
+      this.width = this.modelMesh.width;
+      this.height = this.modelMesh.height;
+      this.depth = this.modelMesh.depth;
+      this.setCannonBoxBody();
     });
   }
 }

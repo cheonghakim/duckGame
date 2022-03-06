@@ -26,7 +26,7 @@ export default function main() {
     0.1,
     1000
   );
-  camera.position.set(0, 0, 5);
+  camera.position.set(38, 8, 10);
   scene.add(camera);
 
   // Light
@@ -51,17 +51,23 @@ export default function main() {
   // Floor
   const floor = new Floor({
     imageSrc: "/models/background/floor1.glb",
+    x: -20,
+    rotationX: Math.PI * 0.5,
+    rotationZ: -Math.PI,
   });
+
   const floor2 = new Floor({
     imageSrc: "/models/background/floor2.glb",
+    x: 20,
+    rotationX: Math.PI * 0.5,
+    rotationZ: -Math.PI,
+    // z: -5.92967,
   });
 
   // Player
-  // const loader = new GLTFLoader();
-  // loader.load("/models/player/character_duck.gltf", (obj) => {
-  //   const mesh = obj.scene.children[0];
-  //   scene.add(mesh);
-  // });
+  //  const player = new Player({
+
+  // })
 
   // 그리기
   const clock = new THREE.Clock();
