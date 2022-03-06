@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { Floor, Pillar, Glass, Bridge } from "./Stuff";
-import Player from "./Player";
+import { Floor, Player, Pillar, Glass, Bridge } from "./Stuff";
 import { commonAttr, commonEnv } from "./Common";
 
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
@@ -65,9 +64,9 @@ export default function main() {
   });
 
   // Player
-  //  const player = new Player({
-
-  // })
+  const player = new Player({
+    imageSrc: "/models/player/character_bear.gltf",
+  });
 
   // 그리기
   const clock = new THREE.Clock();

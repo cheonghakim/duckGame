@@ -1,6 +1,6 @@
 import { commonMat, commonEnv } from "./Common";
 import * as CANNON from "cannon-es";
-import { AnimationMixer } from "three";
+import { AnimationMixer, Mesh, BoxGeometry, MeshBasicMaterial } from "three";
 
 export class Stuff {
   constructor(data) {
@@ -27,11 +27,9 @@ export class Stuff {
     this.canonMaterial = data.canonMaterial || commonMat.defaultMaterial;
   }
 
-  setCannonBoxBody() {
+  setCannonBody(shape) {
     this.cannonBody = new CANNON.Body({
-      shape: new CANNON.Box(
-        new CANNON.Vec3(this.width / 2, this.height / 2, this.depth / 2)
-      ),
+      shape,
       mass: this.mass,
       material: this.canonMaterial,
       position: new CANNON.Vec3(this.x, this.y, this.z),
@@ -57,7 +55,43 @@ export class Floor extends Stuff {
       this.width = this.modelMesh.width;
       this.height = this.modelMesh.height;
       this.depth = this.modelMesh.depth;
-      this.setCannonBoxBody();
+      this.setCannonBody(
+        new CANNON.Box(
+          new CANNON.Vec3(this.width / 2, this.height / 2, this.depth / 2)
+        )
+      );
+    });
+  }
+}
+
+export class Player extends Stuff {
+  constructor(data) {
+    super(data);
+    //그림자가 렌더링 되지 않는 문제 해결
+    this.mesh = new Mesh(
+      new BoxGeometry(this.width, this.height, this.depth),
+      new MeshBasicMaterial({ transparent: true, opacity: 0 })
+    );
+    this.mesh.castShadow = true;
+    this.mesh.position.set(this.x, this.y, this.z);
+    this.scene.add(this.mesh);
+
+    this.gltfLoader.load(this.imageSrc, (glb) => {
+      this.modelMesh = glb.scene.children[0];
+      this.modelMesh.position.set(this.x, this.y, this.z);
+      this.modelMesh.rotation.set(
+        this.rotationX,
+        this.rotationY,
+        this.rotationZ
+      );
+      this.modelMesh.castShadow = true;
+      commonEnv.scene.add(this.modelMesh);
+
+      this.setCannonBody(
+        new CANNON.Box(
+          new CANNON.Vec3(this.width / 2, this.height / 2, this.depth / 2)
+        )
+      );
     });
   }
 }
