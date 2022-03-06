@@ -2,6 +2,9 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Floor, Pillar, Glass, Bridge } from "./Stuff";
 import Player from "./Player";
+import { commonAttr, commonEnv } from "./Common";
+
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 export default function main() {
   const canvas = document.querySelector("#three-canvas");
@@ -11,9 +14,10 @@ export default function main() {
   });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1);
+  renderer.setClearAlpha(0.5);
 
   // Scene
-  const scene = new THREE.Scene();
+  const scene = commonEnv.scene;
 
   // Camera
   const camera = new THREE.PerspectiveCamera(
@@ -22,18 +26,21 @@ export default function main() {
     0.1,
     1000
   );
-  camera.position.y = 1.5;
-  camera.position.z = 4;
+  camera.position.set(0, 0, 5);
   scene.add(camera);
 
   // Light
-  const ambientLight = new THREE.AmbientLight("white", 0.5);
+  const ambientLight = new THREE.AmbientLight(commonAttr.lightColor, 0.5);
   scene.add(ambientLight);
 
-  const directionalLight = new THREE.DirectionalLight("white", 1);
+  const directionalLight = new THREE.DirectionalLight(commonAttr.lightColor, 1);
   directionalLight.position.x = 1;
   directionalLight.position.z = 2;
   scene.add(directionalLight);
+
+  // Grid helper
+  const gridHelper = new THREE.GridHelper();
+  scene.add(gridHelper);
 
   // Controls
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -41,30 +48,26 @@ export default function main() {
 
   // Mesh
 
-  // FLoor
+  // Floor
   const floor = new Floor({
-    x: 0,
-    y: 0,
-    z: 0,
-
-    rotationX: 0,
-    rotationY: 0,
-    rotationZ: 0,
-
-    width: 1,
-    height: 1,
-    depth: 1,
-
-    mass: 1,
+    imageSrc: "/models/background/floor1.glb",
   });
-  scene.add(floor);
+  const floor2 = new Floor({
+    imageSrc: "/models/background/floor2.glb",
+  });
+
+  // Player
+  // const loader = new GLTFLoader();
+  // loader.load("/models/player/character_duck.gltf", (obj) => {
+  //   const mesh = obj.scene.children[0];
+  //   scene.add(mesh);
+  // });
 
   // 그리기
   const clock = new THREE.Clock();
 
   function draw() {
     const delta = clock.getDelta();
-
     controls.update();
 
     renderer.render(scene, camera);

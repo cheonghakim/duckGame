@@ -1,6 +1,7 @@
 import { commonMat, commonEnv } from "./Common";
 import { Box, Vec3, Body } from "cannon-es";
 import * as CANNON from "cannon-es";
+import { AnimationMixer } from "three";
 
 export class Stuff {
   constructor(data) {
@@ -18,6 +19,8 @@ export class Stuff {
     this.depth = data.depth || 1;
     //file loader
     this.gltfLoader = commonEnv.gltfLoader;
+    this.fbxLoader = commonEnv.fbxLoader;
+    this.imageSrc = data.imageSrc;
     //cannon attributes
     this.mass = data.math || 0;
     this.canonMaterial = data.canonMaterial || commonMat.defaultMaterial;
@@ -32,7 +35,6 @@ export class Stuff {
       material: this.canonMaterial,
       position: new Vec3(this.x, this.y, this.z),
     });
-
     this.world.addBody(this.cannonBody);
   }
 }
@@ -40,17 +42,10 @@ export class Stuff {
 export class Floor extends Stuff {
   constructor(data) {
     super(data);
-    this.gltfLoader.load("/models/tileLow.gltf", (glb) => {
-      console.log(glb);
-      // this.modelMesh.position.set(this.x, this.y, this.z);
-      // this.modelMesh.rotation.set(
-      //   this.rotationX,
-      //   this.rotationY,
-      //   this.rotationZ
-      // );
-      // this.modelMesh.castShadow = true;
-      // commonEnv.scene.add(this.modelMesh);
+    this.gltfLoader.load(this.imageSrc, (glb) => {
+      this.modelMesh = glb.scene.children[0];
 
+      commonEnv.scene.add(this.modelMesh);
       // this.setCannonBoxBody();
     });
   }
